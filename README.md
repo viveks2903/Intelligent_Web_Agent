@@ -1,93 +1,144 @@
-# Web Task Assistant
 
-> A Python-based web task assistant powered by Google's Gemini AI that interprets tasks, extracts web information, and generates PDF reports.
+---
 
-[![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://python.org)
-[![Gemini](https://img.shields.io/badge/AI-Gemini-orange.svg)](https://deepmind.google/technologies/gemini/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+# 🌐 Intelligent_Web_Agent
 
-## Features
+> 🔍 A Python-based intelligent assistant powered by **Gemini AI** that interprets natural language tasks, scrapes the web, visualizes data, and generates polished PDF reports.
 
-- AI-Powered Task Interpretation using Gemini
-- Smart Web Scraping with retry mechanisms
-- Visual Reports with charts and images
-- Robust error handling and fallback systems
-- Dynamic chart generation (Bar, Pie, Line)
+[![Python](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://www.python.org)
+[![Gemini AI](https://img.shields.io/badge/AI-Gemini-orange.svg)](https://deepmind.google/technologies/gemini/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/Contributions-Welcome-brightgreen.svg)](../../issues)
 
-## Installation
+---
+
+## 🚀 Features
+
+- 🤖 **AI-Powered Task Interpretation** using Google’s **Gemini**
+- 🌐 **Smart Web Scraping** with robust retry and fallback
+- 📊 **Visual Insights** via dynamic charts (Bar, Pie, Line)
+- 🧠 **Information Extraction** from live web pages
+- 🖼️ **Media-Aware Reporting** with chart and image support
+- 📄 **Polished PDF Report** generation with visuals and summaries
+- 🔒 **Robust Error Handling** to gracefully manage failures
+
+---
+
+## 📦 Installation
 
 ```bash
-# Clone repository
-git clone https://github.com/yourusername/web-task-assistant.git
-cd web-task-assistant
+# Clone the repository
+git clone https://github.com/yourusername/intelligent_web_agent.git
+cd intelligent_web_agent
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Setup environment
+# Configure environment variables
 cp .env.example .env
-# Add your Google API key to .env file
+# Add your Gemini API key to .env file
 ```
 
-## Usage
+---
+
+## 🧠 How It Works
+
+1. **Input a Natural Language Task**
+2. **Gemini AI** interprets the intent
+3. Web scraping fetches relevant live content
+4. Extracted data is summarized and visualized
+5. A final PDF report is generated 📄
+
+---
+
+## 🛠️ Usage
 
 ```bash
-python web_task_assistant.py
+python intelligent_web_agent.py
 ```
 
-Example tasks:
+Example prompts:
+- `"Find the top 5 AI-related headlines"`
+- `"Get the latest cryptocurrency prices"`
+- `"Summarize recent space exploration news"`
+
+---
+
+## 📁 Project Structure
+
 ```
-"Find the top 5 AI related headlines"
-"Get the latest cryptocurrency prices"
-"Summarize recent space exploration news"
+intelligent_web_agent/
+├── intelligent_web_agent.py   # Main script
+├── requirements.txt        # Python dependencies
+├── .env.example            # Env template
+└── README.md               # Project documentation
 ```
 
-## Project Structure
+---
 
+## 🧩 Core Functions
+
+| Function | Description |
+|----------|-------------|
+| `interpret_task()` | Uses Gemini to parse and understand the task |
+| `fetch_webpage()` | Retrieves relevant content from the web with retry logic |
+| `extract_information()` | Extracts structured data from unstructured text |
+| `create_chart()` | Generates charts using `matplotlib` |
+| `save_results_to_file()` | Compiles everything into a PDF using `reportlab` |
+
+---
+
+## 📚 Dependencies
+
+- `google-generativeai >= 0.3.0`
+- `requests >= 2.31.0`
+- `beautifulsoup4 >= 4.12.0`
+- `reportlab >= 4.0.0`
+- `Pillow >= 10.0.0`
+- `matplotlib >= 3.7.0`
+
+Install them using:
+
+```bash
+pip install -r requirements.txt
 ```
-web-task-assistant/
-├── web_task_assistant.py   # Main script
-├── requirements.txt        # Dependencies
-└── README.md              # Documentation
-```
 
-## Core Functions
+---
 
-- `interpret_task()` - Task analysis using Gemini AI
-- `fetch_webpage()` - Web content retrieval with retries
-- `extract_information()` - Smart data extraction
-- `create_chart()` - Data visualization
-- `save_results_to_file()` - PDF report generation
+## ⚠️ Limitations
 
-## Dependencies
+- Max text length: **10,000 characters**
+- Max images per report: **3**
+- Internet connection required 🌐
+- Subject to **Gemini API rate limits**
 
-- google-generativeai >= 0.3.0
-- requests >= 2.31.0
-- beautifulsoup4 >= 4.12.0
-- reportlab >= 4.0.0
-- Pillow >= 10.0.0
-- matplotlib >= 3.7.0
+---
 
-## Limitations
+## 🌱 Contributing
 
-- Text processing: 10,000 chars max
-- Images per report: 3 max
-- Requires internet connection
-- API rate limits apply
+We welcome your ideas and improvements!
 
-## Contributing
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/YourFeature`
+3. Commit your changes: `git commit -m "Add YourFeature"`
+4. Push to GitHub: `git push origin feature/YourFeature`
+5. Open a Pull Request ✅
 
-1. Fork the repo
-2. Create feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open Pull Request
+---
 
-## Roadmap
+## 🔭 Roadmap
 
-- [ ] Additional chart types
-- [ ] Caching system
-- [ ] Authentication support
-- [ ] Enhanced error reporting
-- [ ] Custom PDF templates
-- [ ] Concurrent scraping
+- [ ] 📈 Support for more chart types (e.g., scatter, histogram)
+- [ ] 🧰 Caching for repeated queries
+- [ ] 🔐 API Authentication layer
+- [ ] 🚨 Enhanced logging and error reporting
+- [ ] 🎨 Custom PDF themes and templates
+- [ ] ⚡ Async/concurrent scraping for speed boost
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
+
+---
