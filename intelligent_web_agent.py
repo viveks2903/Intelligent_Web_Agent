@@ -4,7 +4,6 @@ from requests.exceptions import RequestException
 from bs4 import BeautifulSoup
 import json
 import os
-from dotenv import load_dotenv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -20,15 +19,15 @@ import base64
 from PIL import Image as PILImage
 from urllib.parse import urljoin
 import time
+from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables from .env file
 load_dotenv()
 
-# Initialize the Gemini client with your API key from environment variable
+# Initialize the Gemini client with API key from .env
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 if not GOOGLE_API_KEY:
-    raise ValueError("Missing GOOGLE_API_KEY in .env file")
-
+    raise ValueError("GOOGLE_API_KEY not found in .env file")
 genai.configure(api_key=GOOGLE_API_KEY)
 
 def interpret_task(task_description):
@@ -47,6 +46,7 @@ def interpret_task(task_description):
     try:
         return json.loads(response.text)
     except json.JSONDecodeError:
+      
         response_text = response.text
         if '{' in response_text and '}' in response_text:
             json_str = response_text[response_text.find('{'):response_text.rfind('}')+1]
@@ -66,9 +66,10 @@ def fetch_webpage(url, max_retries=3):
             response.raise_for_status()  # Raise an exception for bad status codes
             return response.text
         except requests.exceptions.RequestException as e:
-            if attempt == max_retries - 1:  # Last attempt
+            if attempt == max_retries - 1: 
                 print(f"Failed to fetch {url} after {max_retries} attempts.")
                 print(f"Error: {str(e)}")
+                # Try an alternative URL if possible
                 alternative_url = get_alternative_url(url)
                 if alternative_url:
                     print(f"Trying alternative URL: {alternative_url}")
@@ -78,7 +79,7 @@ def fetch_webpage(url, max_retries=3):
                         return response.text
                     except:
                         pass
-                return ""  
+                return ""  # Return empty string if all attempts fail
             print(f"Attempt {attempt + 1} failed. Retrying...")
             time.sleep(2)  # Wait 2 seconds between retries
 
@@ -87,6 +88,7 @@ def get_alternative_url(url):
     # Map of alternative URLs for common sites
     alternatives = {
         'www.fs.usda.gov': 'en.wikipedia.org/wiki/Yana_Caves',
+        
     }
     
     for domain, alt in alternatives.items():
@@ -106,7 +108,7 @@ def extract_information(html_content, extraction_targets, task_description):
     if len(page_text) > 10000:
         page_text = page_text[:10000] + "..."
     
-    # Use the latest Gemini model
+    
     model = genai.GenerativeModel('gemini-1.5-pro')
     prompt = f"""
 Task: {task_description}
@@ -129,7 +131,7 @@ Include only the fields that are relevant and available in the content. Format a
     try:
         return json.loads(response.text)
     except json.JSONDecodeError:
-        # If Gemini doesn't return valid JSON, try to extract it
+        
         response_text = response.text
         if '{' in response_text and '}' in response_text:
             json_str = response_text[response_text.find('{'):response_text.rfind('}')+1]
@@ -178,10 +180,11 @@ def download_image(url, max_size=(800, 800)):
         response.raise_for_status()
         img = PILImage.open(io.BytesIO(response.content))
         
+        # Convert to RGB if necessary
         if img.mode in ('RGBA', 'P'):
             img = img.convert('RGB')
         
-        # Resize if too large while maintaining aspect ratio
+        
         if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
             img.thumbnail(max_size, PILImage.Resampling.LANCZOS)
         
@@ -241,6 +244,7 @@ def extract_visual_elements(html_content, base_url):
         'charts': []
     }
     
+    # Extract images
     for img in soup.find_all('img'):
         src = img.get('src', '')
         if src:
@@ -250,7 +254,8 @@ def extract_visual_elements(html_content, base_url):
     
     # Extract table data that could be visualized
     for table in soup.find_all('table'):
-        # Process table data to create chart data.
+        # Process table data to create chart data
+    
         data = {'labels': [], 'values': []}
         for row in table.find_all('tr'):
             cols = row.find_all(['td', 'th'])
@@ -280,6 +285,7 @@ def save_results_to_file(result, task_description, html_content=None, base_url=N
     styles = getSampleStyleSheet()
     elements = []
     
+   
     styles.add(ParagraphStyle(
         name='CustomTitle',
         parent=styles['Heading1'],
@@ -293,6 +299,7 @@ def save_results_to_file(result, task_description, html_content=None, base_url=N
         spaceAfter=12
     ))
     
+    
     elements.append(Paragraph(f"Task: {task_description}", styles['CustomTitle']))
     elements.append(Paragraph(
         f"Timestamp: {__import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", 
@@ -300,15 +307,18 @@ def save_results_to_file(result, task_description, html_content=None, base_url=N
     ))
     elements.append(Spacer(1, 0.2*inch))
     
+    # Extract visual elements if HTML content is available
     if html_content and base_url:
         visual_elements = extract_visual_elements(html_content, base_url)
         
+        # Add relevant images
         for img_url in visual_elements['images'][:3]:  # Limit to first 3 images
             img = download_image(img_url)
             if img:
                 elements.append(img)
                 elements.append(Spacer(1, 0.1*inch))
         
+        # Add charts based on extracted data
         for chart_data in visual_elements['charts']:
             if len(chart_data['labels']) <= 5:
                 chart = create_chart(chart_data, 'pie')
@@ -317,6 +327,7 @@ def save_results_to_file(result, task_description, html_content=None, base_url=N
             elements.append(chart)
             elements.append(Spacer(1, 0.1*inch))
     
+    # Add extracted information
     if "error" in result:
         elements.append(Paragraph(f"Error: {result['error']}", styles['CustomHeading']))
         if "raw_response" in result:
@@ -328,6 +339,7 @@ def save_results_to_file(result, task_description, html_content=None, base_url=N
             if isinstance(value, list):
                 elements.append(Paragraph(f"{key}:", styles['CustomHeading']))
                 
+                # Check if the data can be visualized
                 if len(value) > 0 and all(isinstance(item, (int, float)) for item in value):
                     chart_data = {
                         'labels': [str(i) for i in range(len(value))],
@@ -354,6 +366,7 @@ def save_results_to_file(result, task_description, html_content=None, base_url=N
 
 # Example usage
 if __name__ == "__main__":
+    # Get task description from user input
     print("Web Task Assistant")
     print("------------------")
     task = input("Enter your web task (e.g., 'Find the top 5 AI related headlines'): ")
@@ -369,5 +382,3 @@ if __name__ == "__main__":
     
     # Save results to a text file
     save_results_to_file(result, task)
-
-
